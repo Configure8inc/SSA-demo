@@ -70,6 +70,7 @@ jobs:
 
           response=$(curl -X POST -H "Authorization: Bearer $orgAdminToken" \
             -H "Accept: application/vnd.github+json" \
+            -H "X-OAuth-Scopes: repo" \
             -d '{
               "name": "'"$repoName"'",
               "description": "'"$repoDescr"'",
