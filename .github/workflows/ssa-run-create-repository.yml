@@ -71,9 +71,12 @@ jobs:
           response=$(curl -X POST -H "Authorization: Bearer $orgAdminToken" \
             -H "Accept: application/vnd.github+json" \
             -d '{
-              "name": "'"$repoName"'", "description": "'"$repoDescr"'", "private": "'"$private"'", "auto_init": "'"$autoInit"'"
+              "name": "'"$repoName"'",
+              "description": "'"$repoDescr"'",
+              "private": '"$private"',
+              "auto_init": '"$autoInit"'
             }' \
-            https://api.github.com/orgs/${{ github.event.inputs.repoOwner }}/repos)
+            "https://api.github.com/orgs/${{ github.event.inputs.repoOwner }}/repos")
 
           echo "API Response: $response"
 
