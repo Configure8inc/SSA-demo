@@ -9,14 +9,15 @@ on:
       reportUrl:
         description: SSA Report URL
         required: true
-      gitToken:
-        description: Token
-        required: true
       orgApiKey:
         description: Token
         required: true        
       repoName: 
         description: 'Name of the repository to be created'
+        required: true
+        default: ''
+      repoOwner: 
+        description: 'Owner of the repository to be created'
         required: true
         default: ''
       repoDescr: 
@@ -36,14 +37,14 @@ on:
 jobs:
   create_repo_job:
     runs-on: ubuntu-latest
-
+    permissions:
+      repository-projects: write
     steps:
       - name: Print parameters
         run: |
           echo "Token: ${{ github.event.inputs.c8-report-token }}"
           echo "Report URL: ${{ github.event.inputs.reportUrl }}"
           echo "Repository name: ${{ github.event.inputs.repoName }}"
-          echo "Git token: ${{ github.event.inputs.gitToken }}"
 
       - name: Set startedAt
         id: set_startedAt
@@ -62,17 +63,17 @@ jobs:
         id: create-repo
         run: |
           repoName="${{ github.event.inputs.repoName }}"
-          orgAdminToken="${{ github.event.inputs.gitToken }}"
+          orgAdminToken="${{ secrets.GITHUB_TOKEN }}"
           autoInit="${{ github.event.inputs.autoInit }}" 
           private="${{ github.event.inputs.private }}" 
           repoDescr="${{ github.event.inputs.repoDescr }}" 
 
-          response=$(curl -X POST -H "Authorization: $orgAdminToken" \
-            -H "Accept: application/vnd.github.v3+json" \
+          response=$(curl -X POST -H "Authorization: Bearer $orgAdminToken" \
+            -H "Accept: application/vnd.github+json" \
             -d '{
               "name": "'"$repoName"'", "description": "'"$repoDescr"'", "private": "'"$private"'", "auto_init": "'"$autoInit"'"
             }' \
-            https://api.github.com/user/repos)
+            https://api.github.com/orgs/${{ github.event.inputs.repoOwner }}/repos)
 
           echo "API Response: $response"
 
